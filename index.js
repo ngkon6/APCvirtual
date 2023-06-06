@@ -18,13 +18,16 @@ const controller = new easymidi.Output(outputs[1]);
 
 const colors = {
     black: 0,
+    dimwhite: 1,
     white: 3,
     red: 5,
+    dimred: 7,
     warmwhite: 8,
     orange: 9,
     yellow: 13,
     mintgreen: 20,
     green: 21,
+    dimgreen: 23,
     seagreen: 25,
     cyan: 37,
     skyblue: 40,
@@ -33,7 +36,8 @@ const colors = {
     violet: 49,
     uv: 50,
     magenta: 53,
-    pink: 57
+    pink: 57,
+    orangered: 60
 };
 
 let note = 0;

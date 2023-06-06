@@ -7,13 +7,16 @@ Might be useful for some programs.
 
 To be able to illuminate the APC Mini pads, you can create a colormap.
 Just copy or rename `colormap-blank.txt` to `colormap.txt` and change `black` to one of the following:
+- `dimwhite`;
 - `white`;
 - `red`;
+- `dimred`;
 - `warmwhite`;
 - `orange`;
 - `yellow`;
 - `mintgreen`;
 - `green`;
+- `dimgreen`;
 - `seagreen`;
 - `cyan`;
 - `skyblue`;
@@ -22,4 +25,5 @@ Just copy or rename `colormap-blank.txt` to `colormap.txt` and change `black` to
 - `violet`;
 - `uv`;
 - `magenta`;
-- `pink`.
+- `pink`;
+- `orangered`.
