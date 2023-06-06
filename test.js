@@ -9,6 +9,7 @@ console.log("\nAvailable outputs:");
 for (let i=0; i<outputs.length; i++) console.log(`${i} >> ${outputs[i]}`);
 
 const input = new easymidi.Input(inputs[1]);
+const output = new easymidi.Output(outputs[1]);
 
 input.on("noteon", function(res) {
     console.log(`Note on: note ${res.note} set to ${res.velocity} in channel ${res.channel}`);
@@ -20,4 +21,5 @@ input.on("noteoff", function(res) {
 
 input.on("cc", function(res) {
     console.log(`Control change: controller ${res.controller} set to ${res.value} in channel ${res.channel}`);
+    if (process.argv.includes("-s")) output.send("noteon", {note: res.controller, velocity: res.value, channel: 6});
 });

@@ -8,8 +8,9 @@ const outputs = easymidi.getOutputs();
 
 console.log("Available inputs:");
 for (let i=0; i<inputs.length; i++) console.log(`${i} >> ${inputs[i]}`);
-console.log("\nAvailable outputs:");
+console.log(EOL + "Available outputs:");
 for (let i=0; i<outputs.length; i++) console.log(`${i} >> ${outputs[i]}`);
+console.log(EOL);
 
 const input = new easymidi.Input(inputs[1]);
 const output = new easymidi.Output(outputs[0]);
@@ -26,14 +27,17 @@ const colors = {
     green: 21,
     seagreen: 25,
     cyan: 37,
+    skyblue: 40,
     lavender: 41,
     blue: 45,
     violet: 49,
+    uv: 50,
     magenta: 53,
     pink: 57
 };
 
 let note = 0;
+
 if (fs.existsSync(path.join(__dirname, "colormap.txt"))) {
     fs.readFile(path.join(__dirname, "colormap.txt"), function(err, data) {
         if (err) throw err;
@@ -50,14 +54,19 @@ if (fs.existsSync(path.join(__dirname, "colormap.txt"))) {
                     process.exit(2);
                 } else {
                     for (const cell of row) {
-                        if (cell in colors) controller.send("noteon", {note: note, velocity: colors[cell], channel: 0});
-                        else console.warn("The given color was not found in the color scheme.");
-
+                        if (cell.includes("@")) {
+                            const pad = cell.split("@");
+                            if (isNaN(pad[1])) console.warn("The color state must be numeric!");
+                            else if (!pad[0].trim() in colors) console.warn("The given color was not found in the color scheme.");
+                            else controller.send("noteon", {note: note, velocity: colors[pad[0].trim()], channel: parseInt(pad[1])});
+                        } else if (!cell.trim() in colors) console.warn("The given color was not found in the color scheme.");
+                        else controller.send("noteon", {note: note, velocity: colors[cell.trim()], channel: 6});
+                        
                         note++;
                     }
                 }
             }
-        }
+        }    
     });
 } else console.warn("No colormap.txt was found, so the pads will not be illuminated.");
 
