@@ -16,6 +16,17 @@ const input = new easymidi.Input(inputs[1]);
 const output = new easymidi.Output(outputs[0]);
 const controller = new easymidi.Output(outputs[1]);
 
+controller.send("noteon", {note: 103, velocity: 127, channel: 0});
+controller.send("noteon", {note: 104, velocity: 127, channel: 0});
+controller.send("noteon", {note: 105, velocity: 127, channel: 0});
+controller.send("noteon", {note: 106, velocity: 127, channel: 0});
+controller.send("noteon", {note: 107, velocity: 127, channel: 0});
+controller.send("noteon", {note: 112, velocity: 127, channel: 0});
+controller.send("noteon", {note: 113, velocity: 127, channel: 0});
+controller.send("noteon", {note: 117, velocity: 127, channel: 0});
+controller.send("noteon", {note: 118, velocity: 127, channel: 0});
+controller.send("noteon", {note: 119, velocity: 127, channel: 0});
+
 const colors = {
     black: 0,
     dimwhite: 1,
