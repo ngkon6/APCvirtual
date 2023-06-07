@@ -1,3 +1,15 @@
+@keyframes buttonfx {
+    0%   {
+        filter: none;
+    }
+    50%  {
+        filter: brightness(0.6);
+    }
+    100% {
+        filter: none;
+    }
+}
+
 body {
     margin: 0;
     width: calc(100vw - 8px);
@@ -9,7 +21,7 @@ body {
     border-left: 4px solid red;
     border-right: 4px solid red;
 }
-h2 {
+body > h2 {
     margin: 0;
     display: inline;
     position: relative;
@@ -17,7 +29,7 @@ h2 {
     left: 23px;
     top: 18px;
 }
-h2#name {
+body > h2#name {
     color: transparent;
     -webkit-text-stroke: 1px white;
     margin-left: 437px;
@@ -37,13 +49,14 @@ td div[id^="button"] {
     height: 33px;
     margin: 3px;
     cursor: pointer;
+    animation-iteration-count: infinite;
 }
-td div[id^="minibutton"], #uselessbutton {
+td div[id^="minibutton"] {
     width: 24px;
     height: 24px;
     margin-left: 24px;
 }
-td div[id^="minibutton"] {
+td div[id^="minibutton"]:not(#minibutton122) {
     cursor: pointer;
 }
 td div[id^="fader"] {
@@ -80,6 +93,7 @@ div#button35 { border-bottom-right-radius: 6px; }
 div#button36 { border-bottom-left-radius: 6px; }
 
 #overlay {
+    display: none;
     background-color: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(8px);
     width: 100vw;
@@ -88,13 +102,52 @@ div#button36 { border-bottom-left-radius: 6px; }
     left: 0;
     top: 0;
 }
-#overlay #window {
+#overlay #config-window {
     background-color: #222;
-    width: 40vw;
-    height: 40vh;
+    width: 50vw;
+    height: 38vh;
     position: absolute;
-    left: 30vw;
-    top: 30vh;
+    left: 25vw;
+    top: 31vh;
     border-radius: 8px;
+    text-align: center;
+}
+#overlay #config-window span {
+    font-size: 17px;
+}
+#overlay #config-window select, #overlay #config-window select option {
+    background-color: #222;
+    color: white;
+    font-size: 18px;
+    outline: none;
+    border-radius: 4px;
+}
+#overlay #config-window button#confirm { background-color: lightgreen; }
+#overlay #config-window button#exit { background-color: salmon; }
+#overlay #config-window button {
+    color: black;
+    font-size: 24px;
+    padding: 3px 16px;
+    margin: 0 5%;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+    transition: .25s ease;
+}
+#overlay #config-window button:hover {
+    filter: brightness(1.2);
+    cursor: pointer;
 }
 
+#overlay #error-window {
+    display: none;
+    background-color: #222;
+    width: 60vw;
+    height: 20vh;
+    position: absolute;
+    left: 20vw;
+    top: 40vh;
+    border-radius: 8px;
+    text-align: center;
+}
+#overlay #error-window h2 { margin: 25px 0; }

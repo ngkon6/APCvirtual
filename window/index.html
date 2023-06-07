@@ -24,7 +24,7 @@
             </tr><tr>
                 <td><div id="button00"></div></td><td><div id="button01"></div></td><td><div id="button02"></div></td><td><div id="button03"></div></td><td><div id="button04"></div></td><td><div id="button05"></div></td><td><div id="button06"></div></td><td><div id="button07"></div></td><td><div id="minibutton119"></div></td>
             </tr><tr id="minibuttons">
-                <td><div id="minibutton100"></div></td><td><div id="minibutton101"></div></td><td><div id="minibutton102"></div></td><td><div id="minibutton103"></div></td><td><div id="minibutton104"></div></td><td><div id="minibutton105"></div></td><td><div id="minibutton106"></div></td><td><div id="minibutton107"></div></td><td><div id="uselessbutton"></div></td>
+                <td><div id="minibutton100"></div></td><td><div id="minibutton101"></div></td><td><div id="minibutton102"></div></td><td><div id="minibutton103"></div></td><td><div id="minibutton104"></div></td><td><div id="minibutton105"></div></td><td><div id="minibutton106"></div></td><td><div id="minibutton107"></div></td><td><div id="minibutton122"></div></td>
             </tr><tr id="faders">
                 <td><div id="fader68"><div class="fader-slot"></div><div class="fader-knob"></div></div></td>
                 <td><div id="fader69"><div class="fader-slot"></div><div class="fader-knob"></div></div></td>
@@ -38,10 +38,10 @@
             </tr>
         </table>
         <div id="overlay">
-            <div id="window">
-                <h1>Configure pad</h1>
+            <div id="config-window">
+                <h1></h1>
                 <span>Color: </span>
-                <select>
+                <select id="color">
                     <option value="0">black</option>
                     <option value="1">dimwhite</option>
                     <option value="3">white</option>
@@ -66,14 +66,14 @@
                 </select>
                 <br><br>
                 <span>Behavior: </span>
-                <select>
+                <select id="behavior">
                     <option value="0">10% brightness</option>
                     <option value="1">25% brightness</option>
                     <option value="2">50% brightness</option>
                     <option value="3">65% brightness</option>
                     <option value="4">75% brightness</option>
                     <option value="5">90% brightness</option>
-                    <option value="6">100% brightness</option>
+                    <option value="6" selected>100% brightness</option>
                     <option value="7">Breathing 1/16</option>
                     <option value="8">Breathing 1/8</option>
                     <option value="9">Breathing 1/4</option>
@@ -84,14 +84,23 @@
                     <option value="14">Flashing 1/4</option>
                     <option value="15">Flashing 1/2</option>
                 </select>
+                <br><br>
+                <button id="confirm" onclick="setButton(selectedNote, document.getElementById('color').value, document.getElementById('behavior').value)">Confirm</button>
+                <button id="exit" onclick="clearPopups()">Exit</button>
+            </div>
+            <div id="error-window">
+                <h2></h2>
+                <p></p>
             </div>
         </div>
         <script>
+            let selectedNote;
+
             function setFader(number, value) {
                 document.querySelector(`#fader${number} .fader-knob`).style.bottom = Math.round(value / 127 * 136) + "px";
             }
 
-            function setButton(number, to) {
+            function setButton(number, to, behavior) {
                 if (number >= 112) {
                     document.querySelector(`#minibutton${number}`).style.backgroundColor = (document.querySelector(`#minibutton${number}`).style.backgroundColor) ? "" : "limegreen";
                     electronAPI.miniButtonToggle(number, document.querySelector(`#minibutton${number}`).style.backgroundColor != "");
@@ -99,17 +108,91 @@
                     document.querySelector(`#minibutton${number}`).style.backgroundColor = (document.querySelector(`#minibutton${number}`).style.backgroundColor) ? "" : "red";
                     electronAPI.miniButtonToggle(number, document.querySelector(`#minibutton${number}`).style.backgroundColor != "");
                 } else {
-                    document.querySelector(`#button${number}`).style.backgroundColor = to;
+                    const mapping = {
+                        v0: "#555",
+                        v1: "#999",
+                        v3: "#ffffff",
+                        v5: "#ff0000",
+                        v7: "#660000",
+                        v8: "#ffbd6c",
+                        v9: "#ff5400",
+                        v13: "#ffff00",
+                        v20: "#4cff4c",
+                        v21: "#00ff00",
+                        v23: "#006600",
+                        v25: "#00ff19",
+                        v37: "#00a9ff",
+                        v40: "#4c88ff",
+                        v41: "#0055ff",
+                        v45: "#0000ff",
+                        v49: "#5400ff",
+                        v50: "#190064",
+                        v53: "#ff00ff",
+                        v57: "#ff0054",
+                        v60: "#ff1500"
+                    };
+                    document.querySelector(`#button${number}`).style.backgroundColor = mapping[`v${to}`];
+                    electronAPI.setColor(number, to, behavior);
+                    document.querySelector(`#button${number}`).style.animationName = (behavior >= 7) ? "buttonfx" : "";
+                    if (behavior >= 7 && behavior <= 10) {
+                        const speeds = [0.2, 0.22, 0.25, 0.5];
+                        document.querySelector(`#button${number}`).style.animationDuration = `${speeds[behavior - 7]}s`;
+                        document.querySelector(`#button${number}`).style.animationTimingFunction = "";
+                    } else if (behavior >= 10) {
+                        const speeds = [0.125, 0.2, 0.22, 0.25, 0.5];
+                        document.querySelector(`#button${number}`).style.animationDuration = `${speeds[behavior - 10]}s`;
+                        document.querySelector(`#button${number}`).style.animationTimingFunction = "steps(1, end)";
+                    }
+
+                    clearPopups();
                 }
             }
+
+            function error(head, desc) {
+                document.getElementById("overlay").style.display = "block";
+                document.getElementById("error-window").style.display = "block";
+                document.querySelector("#error-window h2").innerHTML = head;
+                document.querySelector("#error-window p").innerHTML = desc;
+                document.getElementById("config-window").style.display = "none";
+            }
+            
+            function config(number) {
+                selectedNote = number;
+                document.getElementById("overlay").style.display = "block";
+                document.getElementById("config-window").style.display = "block";
+                document.querySelector("#config-window h1").innerHTML = `Configure pad ${number}`;
+                document.getElementById("error-window").style.display = "none";
+            }
+
+            function clearPopups() {
+                document.getElementById("overlay").style.display = "none";
+                document.getElementById("error-window").style.display = "none";
+                document.getElementById("config-window").style.display = "none";
+            }
+
+            function press(note, state) {
+                const noteID = (note >= 10) ? note : ("0" + note).slice(-2);
+                document.querySelector(`div[id$="button${noteID}"]`).style.boxShadow = (state) ? "0 0 5px #eee" : "";
+            }
+            
+            function lock(state) {
+                if (state) error("Locked!", "Please unlock to continue.");
+                else clearPopups();
+            }
+
+            window.addEventListener("keydown", function(e) {
+                if (e.key == "l" && e.ctrlKey) electronAPI.toggleLock();
+            });
 
             for (const i of document.querySelectorAll('div[id^="button"]')) {
                 i.addEventListener("mousedown", function(e) {
                     const number = e.target.id.match(/button(\d+)/)[1];
-                    electronAPI.buttonPress(number);
+                    if (e.buttons == 1) electronAPI.buttonPress(number);
+                    else if (e.buttons == 2) config(number);
                 });
             }
             for (const i of document.querySelectorAll('div[id^="minibutton"]')) {
+                if (i.id.endsWith("122")) continue;
                 i.addEventListener("mousedown", function(e) {
                     const number = e.target.id.match(/minibutton(\d+)/)[1];
                     if (e.buttons == 1) electronAPI.buttonPress(number);

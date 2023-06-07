@@ -4,28 +4,67 @@ const path = require("path");
 const { EOL } = require("os");
 const fs = require("fs");
 let window;
+let input = {};
+let output = {};
+let controller = {send: () => {}};
 
 const inputs = easymidi.getInputs();
 const outputs = easymidi.getOutputs();
+let foundInput = -1;
+let foundOutput = -1;
+let foundController = -1;
+let noControllerFound = false;
 
-console.log("Available inputs:");
-for (let i=0; i<inputs.length; i++) console.log(`${i} >> ${inputs[i]}`);
-console.log(EOL + "Available outputs:");
-for (let i=0; i<outputs.length; i++) console.log(`${i} >> ${outputs[i]}`);
-console.log(EOL);
+for (let i in inputs) {
+    if (inputs[i].includes("APC mini mk2 Contr")) foundInput = +i;
+}
+for (let i in outputs) {
+    if (outputs[i].includes("Midi Through")) foundOutput = +i;
+    if (outputs[i].includes("APC mini mk2 Contr")) foundController = +i;
+}
 
-const input = new easymidi.Input(inputs[1]);
-const output = new easymidi.Output(outputs[0]);
-const controller = new easymidi.Output(outputs[1]);
+try {
+    input = new easymidi.Input(inputs[foundInput]);
+    output = new easymidi.Output(outputs[foundOutput]);
+    controller = new easymidi.Output(outputs[foundController]);
+
+    input.on("noteon", function(res) {
+        if (locked) console.warn("Script is locked!");
+        else {
+            output.send("noteon", {note: res.note, velocity: res.velocity, channel: 0});
+            window.webContents.executeJavaScript(`press(${res.note}, true)`);
+        }
+    });
+    
+    input.on("noteoff", function(res) {
+        if (locked) console.warn("Script is locked!");
+        else {
+            output.send("noteoff", {note: res.note, velocity: res.velocity, channel: 0});
+            window.webContents.executeJavaScript(`press(${res.note}, false)`);
+        }
+    });
+    
+    input.on("cc", function(res) {
+        const note = res.controller + 20;
+        if (launched && !locked) window.webContents.executeJavaScript(`setFader(${note}, ${res.value})`);
+        
+        if (locked) console.warn("Script is locked!");  
+        else output.send("noteon", {note: note, velocity: res.value, channel: 0});
+    });
+} catch (err) {
+    noControllerFound = true;
+}
 
 app.on("ready", function() {
     window = new BrowserWindow({width: 240 * 3, height: 209 * 3, resizable: false, webPreferences: {preload: path.join(__dirname, "preload.js")}});
     window.menuBarVisible = false;
     window.loadFile("window/index.html");
     window.setTitle("MidiConverter");
+    window.setIcon("icon.png");
     window.on("ready-to-show", function() {
         window.show();
         launched = true;
+        if (noControllerFound) window.webContents.executeJavaScript('error("No APC mini is connected!", "Please connect one and restart to proceed.")');
     });
 
     ipcMain.on("press", function(_event, number) {
@@ -34,6 +73,14 @@ app.on("ready", function() {
     ipcMain.on("minibutton-led", function(_event, data) {
         const response = data.split("@");
         controller.send("noteon", {note: response[0], velocity: response[1], channel: 0});
+    });
+    ipcMain.on("set-color", function(_event, data) {
+        const response = data.split("@");
+        controller.send("noteon", {note: +response[0], velocity: +response[1], channel: +response[2]});
+    });
+    ipcMain.on("toggle-lock", function() {
+        locked = !locked;
+        window.webContents.executeJavaScript(`lock(${locked})`);
     });
 });
 
@@ -96,26 +143,3 @@ if (fs.existsSync(path.join(__dirname, "colormap.txt"))) {
         }    
     });
 } else console.warn("No colormap.txt was found, so the pads will not be illuminated.");
-
-input.on("noteon", function(res) {
-    if (process.argv.includes("-v")) console.log(`Note on: note ${res.note} set to ${res.velocity} in channel ${res.channel}`);
-    
-    if (locked) console.warn("Script is locked!");
-    else output.send("noteon", {note: res.note, velocity: res.velocity, channel: 0});
-});
-
-input.on("noteoff", function(res) {
-    if (process.argv.includes("-v")) console.log(`Note off: note ${res.note} set to ${res.velocity} in channel ${res.channel}`);
-    
-    if (locked) console.warn("Script is locked!");
-    else output.send("noteoff", {note: res.note, velocity: res.velocity, channel: 0});
-});
-
-input.on("cc", function(res) {
-    const note = res.controller + 20;
-    if (process.argv.includes("-v")) console.log(`Control change: controller ${res.controller} (= note ${note}) set to ${res.value} in channel ${res.channel}`);
-    if (launched) window.webContents.executeJavaScript(`setFader(${note}, ${res.value})`);
-    
-    if (locked) console.warn("Script is locked!");  
-    else output.send("noteon", {note: note, velocity: res.value, channel: 0});
-});
