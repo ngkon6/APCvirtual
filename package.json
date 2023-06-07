@@ -1,9 +1,10 @@
 {
   "dependencies": {
-    "easymidi": "^3.0.1"
+    "easymidi": "^3.0.1",
+    "electron": "^25.0.1"
   },
   "scripts": {
-    "start": "node index.js",
+    "start": "electron .",
     "test": "node test.js"
   }
 }

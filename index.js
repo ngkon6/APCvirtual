@@ -1,15 +1,9 @@
+const { app, BrowserWindow, ipcMain } = require("electron");
 const easymidi = require("easymidi");
-const readline = require("readline");
 const path = require("path");
 const { EOL } = require("os");
 const fs = require("fs");
-
-readline.emitKeypressEvents(process.stdin);
-if (process.stdin.isTTY) process.stdin.setRawMode(true);
-process.stdin.on("keypress", function(_chunk, key) {
-    if (key.name == "l" && key.ctrl) locked = !locked;
-    else if (key.name == "c" && key.ctrl) process.exit(0);
-});
+let window;
 
 const inputs = easymidi.getInputs();
 const outputs = easymidi.getOutputs();
@@ -24,16 +18,24 @@ const input = new easymidi.Input(inputs[1]);
 const output = new easymidi.Output(outputs[0]);
 const controller = new easymidi.Output(outputs[1]);
 
-controller.send("noteon", {note: 103, velocity: 127, channel: 0});
-controller.send("noteon", {note: 104, velocity: 127, channel: 0});
-controller.send("noteon", {note: 105, velocity: 127, channel: 0});
-controller.send("noteon", {note: 106, velocity: 127, channel: 0});
-controller.send("noteon", {note: 107, velocity: 127, channel: 0});
-controller.send("noteon", {note: 112, velocity: 127, channel: 0});
-controller.send("noteon", {note: 113, velocity: 127, channel: 0});
-controller.send("noteon", {note: 117, velocity: 127, channel: 0});
-controller.send("noteon", {note: 118, velocity: 127, channel: 0});
-controller.send("noteon", {note: 119, velocity: 127, channel: 0});
+app.on("ready", function() {
+    window = new BrowserWindow({width: 240 * 3, height: 209 * 3, resizable: false, webPreferences: {preload: path.join(__dirname, "preload.js")}});
+    window.menuBarVisible = false;
+    window.loadFile("window/index.html");
+    window.setTitle("MidiConverter");
+    window.on("ready-to-show", function() {
+        window.show();
+        launched = true;
+    });
+
+    ipcMain.on("press", function(_event, number) {
+        output.send("noteon", {note: number, velocity: 127, channel: 0});
+    });
+    ipcMain.on("minibutton-led", function(_event, data) {
+        const response = data.split("@");
+        controller.send("noteon", {note: response[0], velocity: response[1], channel: 0});
+    });
+});
 
 const colors = {
     black: 0,
@@ -61,6 +63,7 @@ const colors = {
 
 let note = 0;
 let locked = false;
+let launched = false;
 
 if (fs.existsSync(path.join(__dirname, "colormap.txt"))) {
     fs.readFile(path.join(__dirname, "colormap.txt"), function(err, data) {
@@ -109,8 +112,10 @@ input.on("noteoff", function(res) {
 });
 
 input.on("cc", function(res) {
-    if (process.argv.includes("-v")) console.log(`Control change: controller ${res.controller} set to ${res.value} in channel ${res.channel}`);
+    const note = res.controller + 20;
+    if (process.argv.includes("-v")) console.log(`Control change: controller ${res.controller} (= note ${note}) set to ${res.value} in channel ${res.channel}`);
+    if (launched) window.webContents.executeJavaScript(`setFader(${note}, ${res.value})`);
     
-    if (locked) console.warn("Script is locked!");
-    else output.send("noteon", {note: res.controller + 20, velocity: res.value, channel: 0});
+    if (locked) console.warn("Script is locked!");  
+    else output.send("noteon", {note: note, velocity: res.value, channel: 0});
 });
