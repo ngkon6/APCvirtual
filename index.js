@@ -1,7 +1,15 @@
 const easymidi = require("easymidi");
+const readline = require("readline");
 const path = require("path");
 const { EOL } = require("os");
 const fs = require("fs");
+
+readline.emitKeypressEvents(process.stdin);
+if (process.stdin.isTTY) process.stdin.setRawMode(true);
+process.stdin.on("keypress", function(_chunk, key) {
+    if (key.name == "l" && key.ctrl) locked = !locked;
+    else if (key.name == "c" && key.ctrl) process.exit(0);
+});
 
 const inputs = easymidi.getInputs();
 const outputs = easymidi.getOutputs();
@@ -52,6 +60,7 @@ const colors = {
 };
 
 let note = 0;
+let locked = false;
 
 if (fs.existsSync(path.join(__dirname, "colormap.txt"))) {
     fs.readFile(path.join(__dirname, "colormap.txt"), function(err, data) {
@@ -87,15 +96,21 @@ if (fs.existsSync(path.join(__dirname, "colormap.txt"))) {
 
 input.on("noteon", function(res) {
     if (process.argv.includes("-v")) console.log(`Note on: note ${res.note} set to ${res.velocity} in channel ${res.channel}`);
-    output.send("noteon", {note: res.note, velocity: res.velocity, channel: 0});
+    
+    if (locked) console.warn("Script is locked!");
+    else output.send("noteon", {note: res.note, velocity: res.velocity, channel: 0});
 });
 
 input.on("noteoff", function(res) {
     if (process.argv.includes("-v")) console.log(`Note off: note ${res.note} set to ${res.velocity} in channel ${res.channel}`);
-    output.send("noteoff", {note: res.note, velocity: res.velocity, channel: 0});
+    
+    if (locked) console.warn("Script is locked!");
+    else output.send("noteoff", {note: res.note, velocity: res.velocity, channel: 0});
 });
 
 input.on("cc", function(res) {
     if (process.argv.includes("-v")) console.log(`Control change: controller ${res.controller} set to ${res.value} in channel ${res.channel}`);
-    output.send("noteon", {note: res.controller + 20, velocity: res.value, channel: 0});
+    
+    if (locked) console.warn("Script is locked!");
+    else output.send("noteon", {note: res.controller + 20, velocity: res.value, channel: 0});
 });
