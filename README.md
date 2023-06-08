@@ -1,29 +1,9 @@
-# MidiConverter
+# APCvirtual
 
-Simple tool for the AKAI APC Mini MK2 to convert Control Changes to MIDI notes.  
-Might be useful for some programs.
+Simple tool visualizing the AKAI APC Mini MK2 and gives the ability to enable and disable the LEDs to your desire.  
+Next to that, it also converts Control Changes to MIDI notes and outputs them to a Midi Through device on Linux.  
+Might be useful for some programs!
 
-## Colormap
+> **Note:** This program does not work when no APC Mini is connected to the computer.
 
-To be able to illuminate the APC Mini pads, you can create a colormap.
-Just copy or rename `colormap-blank.txt` to `colormap.txt` and change `black` to one of the following:
-- `dimwhite`;
-- `white`;
-- `red`;
-- `dimred`;
-- `warmwhite`;
-- `orange`;
-- `yellow`;
-- `mintgreen`;
-- `green`;
-- `dimgreen`;
-- `seagreen`;
-- `cyan`;
-- `skyblue`;
-- `lavender`;
-- `blue`;
-- `violet`;
-- `uv`;
-- `magenta`;
-- `pink`;
-- `orangered`.
+> **Warning:** This program has only been tested on Linux Mint. We do not guarantee that it works on Windows, macOS and other Linux distributions!

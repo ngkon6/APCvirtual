@@ -5,10 +5,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
         ipcRenderer.send("press", number);
     },
     miniButtonToggle: function(number, state) {
-        ipcRenderer.send("minibutton-led", `${number}@${Number(state)}`);
+        ipcRenderer.send("minibutton-led", {n: number, v: Number(state)});
     },
     setColor: function(number, color, behavior) {
-        ipcRenderer.send("set-color", `${number}@${color}@${behavior}`);
+        ipcRenderer.send("set-color", {n: number, v: color, c: behavior});
     },
     toggleLock: function() {
         ipcRenderer.send("toggle-lock");
