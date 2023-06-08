@@ -79,6 +79,9 @@ app.on("ready", function() {
     ipcMain.on("press", function(_event, number) {
         output.send("noteon", {note: number, velocity: 127, channel: 0});
     });
+    ipcMain.on("release", function(_event, number) {
+        output.send("noteon", {note: number, velocity: 0, channel: 0});
+    });
     ipcMain.on("minibutton-led", function(_event, data) {
         controller.send("noteon", {note: data.n, velocity: data.v, channel: 0});
         if (notes) {
