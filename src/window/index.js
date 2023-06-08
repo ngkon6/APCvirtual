@@ -61,6 +61,10 @@ function setButton(number, to, behavior) {
     }
 }
 
+function validateBehavior(value) {
+    document.getElementById("behavior").disabled = (value == 0);
+}
+
 function error(head, desc) {
     document.getElementById("overlay").style.display = "block";
     document.getElementById("error-window").style.display = "block";
@@ -77,6 +81,7 @@ function config(number) {
     document.querySelector("#config-window #color").value = noteData[+selectedNote].color;
     document.querySelector("#config-window #behavior").value = noteData[+selectedNote].behavior;
     document.getElementById("error-window").style.display = "none";
+    validateBehavior(document.querySelector("#config-window #color").value);
 }
 
 function clearPopups() {
