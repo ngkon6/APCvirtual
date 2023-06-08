@@ -1,4 +1,20 @@
 {
+  "name": "apcvirtual",
+  "version": "1.0.0",
+  "description": "Digital version for the AKAI APC Mini MK2 to control LEDs",
+  "main": "index.js",
+  "keywords": [
+    "APC",
+    "AKAI",
+    "MIDI",
+    "controller"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ILoveAndLikePizza/APCvirtual"
+  },
+  "author": "ILoveAndLikePizza",
+  "license": "MIT",
   "dependencies": {
     "easymidi": "^3.0.1",
     "electron": "^25.0.1"
