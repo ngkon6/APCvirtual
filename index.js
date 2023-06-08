@@ -65,7 +65,15 @@ if (!fs.existsSync(path.join("src", "notes.json"))) {
 }
 
 app.on("ready", function() {
-    window = new BrowserWindow({width: 240 * 3, height: 209 * 3, resizable: false, webPreferences: {preload: path.join(__dirname, "src", "preload.js")}});
+    window = new BrowserWindow({
+        width: 720,
+        height: 627,
+        resizable: false,
+        webPreferences: {
+            devTools: false,
+            preload: path.join(__dirname, "src", "preload.js")
+        }
+    });
     window.menuBarVisible = false;
     window.loadFile("src/window/index.html");
     window.setTitle("APCvirtual");

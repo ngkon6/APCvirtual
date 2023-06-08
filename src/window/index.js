@@ -112,7 +112,6 @@ for (const i of document.querySelectorAll('div[id^="button"]')) {
         else if (e.buttons == 2) config(number);
     });
     i.addEventListener("mouseup", function(e) {
-        console.log(e);
         const number = e.target.id.match(/button(\d+)/)[1];
         if (e.button == 0) electronAPI.buttonRelease(number);
     });
