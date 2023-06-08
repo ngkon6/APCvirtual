@@ -119,3 +119,6 @@ app.on("ready", function() {
         });
     }
 });
+app.on("window-all-closed", function() {
+    if (process.platform != "darwin") app.quit();
+});
