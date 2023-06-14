@@ -10,4 +10,9 @@ Then, run the `create-desktop-entry.sh` file to create a desktop entry into `~/.
 
 > **Note**: This program does not work when no APC Mini is connected to the computer.
 
-> **Warning**: This program has only been tested on Linux Mint. We do not guarantee that it works on Windows, macOS and other Linux distributions!
+## Will it work?
+
+- **Windows**: No
+- **Linux Mint 21.1**: Certainly! It has been developed and tested on this distribution.
+- **Other Linux distributions and Mint versions**: *not tested*
+- **macOS**: *also not tested*
