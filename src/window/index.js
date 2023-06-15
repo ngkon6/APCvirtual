@@ -44,9 +44,10 @@ function setButton(number, to, behavior) {
         };
         const noteID = (number >= 10) ? number : ("0" + number).slice(-2);
         document.querySelector(`#button${noteID}`).style.backgroundColor = mapping[`v${to}`];
-        noteData[number] = {color: to, behavior: behavior};
-        electronAPI.setColor(number, to, behavior);
-        document.querySelector(`#button${noteID}`).style.animationName = (behavior >= 7) ? "buttonfx" : "";
+        const behaviour = (to == 0) ? 6 : behavior; // note the 'u'!
+        noteData[number] = {color: to, behavior: behaviour};
+        electronAPI.setColor(number, to, behaviour);
+        document.querySelector(`#button${noteID}`).style.animationName = (behaviour >= 7) ? "buttonfx" : "";
         if (behavior >= 7 && behavior <= 10) {
             const speeds = [1/8 + 0.1, 1/4 + 0.1, 1/2 + 0.1, 1];
             document.querySelector(`#button${noteID}`).style.animationDuration = `${speeds[behavior - 7]}s`;
