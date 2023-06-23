@@ -75,12 +75,12 @@ function error(head, desc) {
 }
 
 function config(number) {
-    selectedNote = number;
+    selectedNote = +number;
     document.getElementById("overlay").style.display = "block";
     document.getElementById("config-window").style.display = "block";
     document.querySelector("#config-window h1").innerHTML = `Configure pad ${number}`;
-    document.querySelector("#config-window #color").value = noteData[+selectedNote].color;
-    document.querySelector("#config-window #behavior").value = noteData[+selectedNote].behavior;
+    document.querySelector("#config-window #color").value = noteData[selectedNote].color;
+    document.querySelector("#config-window #behavior").value = noteData[selectedNote].behavior;
     document.getElementById("error-window").style.display = "none";
     validateBehavior(document.querySelector("#config-window #color").value);
 }
