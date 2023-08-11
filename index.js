@@ -32,7 +32,7 @@ try {
     controller = new easymidi.Output(outputs[foundController]);
 
     input.on("noteon", function(res) {
-        if (locked) console.warn("Script is locked!");
+        if (locked) console.warn("Program is locked!");
         else {
             output.send("noteon", {note: res.note, velocity: res.velocity, channel: 0});
             window.webContents.executeJavaScript(`press(${res.note}, true)`);
@@ -40,7 +40,7 @@ try {
     });
     
     input.on("noteoff", function(res) {
-        if (locked) console.warn("Script is locked!");
+        if (locked) console.warn("Program is locked!");
         else {
             output.send("noteoff", {note: res.note, velocity: res.velocity, channel: 0});
             window.webContents.executeJavaScript(`press(${res.note}, false)`);
@@ -51,7 +51,7 @@ try {
         const note = res.controller + 20;
         if (launched && !locked) window.webContents.executeJavaScript(`setFader(${note}, ${res.value})`);
         
-        if (locked) console.warn("Script is locked!");  
+        if (locked) console.warn("Program is locked!");  
         else output.send("noteon", {note: note, velocity: res.value, channel: 0});
     });
 } catch (err) {
@@ -81,7 +81,7 @@ app.on("ready", function() {
     window.on("ready-to-show", function() {
         window.show();
         launched = true;
-        if (noControllerFound) window.webContents.executeJavaScript('error("No APC mini is connected!", "Please connect one and restart to proceed.")');
+        if (noControllerFound) window.webContents.executeJavaScript('notConnected()');
     });
 
     ipcMain.on("press", function(_event, number) {

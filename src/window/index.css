@@ -1,4 +1,4 @@
-@keyframes buttonfx {
+@keyframes breathing {
     0%   {
         filter: none;
     }
@@ -7,6 +7,17 @@
     }
     100% {
         filter: none;
+    }
+}
+@keyframes flashing {
+    0%   {
+        background-color: "";
+    }
+    50%  {
+        background-color: #555;
+    }
+    100% {
+        background-color: "";
     }
 }
 
@@ -28,6 +39,9 @@ body > h2 {
     pointer-events: none;
     left: 23px;
     top: 18px;
+}
+body > h2 span {
+    font-size: 0.8em;
 }
 body > h2#name {
     color: transparent;

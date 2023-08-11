@@ -1,5 +1,6 @@
 let noteData = [];
 let selectedNote;
+let noControllerFound = false;
 
 function setFader(number, value) {
     document.querySelector(`#fader${number} .fader-knob`).style.bottom = Math.round(value / 127 * 136) + "px";
@@ -47,15 +48,19 @@ function setButton(number, to, behavior) {
         const behaviour = (to == 0) ? 6 : behavior; // note the 'u'!
         noteData[number] = {color: to, behavior: behaviour};
         electronAPI.setColor(number, to, behaviour);
-        document.querySelector(`#button${noteID}`).style.animationName = (behaviour >= 7) ? "buttonfx" : "";
         if (behavior >= 7 && behavior <= 10) {
             const speeds = [1/8 + 0.1, 1/4 + 0.1, 1/2 + 0.1, 1];
+            document.querySelector(`#button${noteID}`).style.animationName = (behaviour >= 7) ? "breathing" : "";
             document.querySelector(`#button${noteID}`).style.animationDuration = `${speeds[behavior - 7]}s`;
             document.querySelector(`#button${noteID}`).style.animationTimingFunction = "";
         } else if (behavior > 10) {
             const speeds = [1/12 + 0.05, 1/8 + 0.1, 1/4 + 0.1, 1/2, 1.1];
+            document.querySelector(`#button${noteID}`).style.animationName = (behaviour >= 7) ? "flashing" : "";
             document.querySelector(`#button${noteID}`).style.animationDuration = `${speeds[behavior - 11]}s`;
             document.querySelector(`#button${noteID}`).style.animationTimingFunction = "steps(1, end)";
+        } else {
+            const brightness = behavior / 12 + 0.5;
+            document.querySelector(`#button${noteID}`).style.filter = `brightness(${brightness})`;
         }
 
         clearPopups();
@@ -64,6 +69,7 @@ function setButton(number, to, behavior) {
 
 function validateBehavior(value) {
     document.getElementById("behavior").disabled = (value == 0);
+    if (value == 0) document.getElementById("behavior").selectedIndex = 6;
 }
 
 function error(head, desc) {
@@ -72,6 +78,11 @@ function error(head, desc) {
     document.querySelector("#error-window h2").innerHTML = head;
     document.querySelector("#error-window p").innerHTML = desc;
     document.getElementById("config-window").style.display = "none";
+}
+
+function notConnected() {
+    noControllerFound = true;
+    error("No APC mini is connected!", "Please connect one and restart to proceed.");
 }
 
 function config(number) {
@@ -97,6 +108,8 @@ function press(note, state) {
 }
 
 function lock(state) {
+    if (noControllerFound) return;
+
     if (state) error("Locked!", "Please unlock to continue.");
     else clearPopups();
 }
