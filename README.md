@@ -4,6 +4,9 @@ Simple tool visualizing the AKAI APC Mini MK2 and gives the ability to enable an
 Next to that, it also converts Control Changes to MIDI notes and outputs them to a Midi Through device on Linux.  
 Might be useful for some programs!
 
+## Building
+Just run `npm run build` to build the package. Note that having `libasound2-dev` installed is required!
+
 ## Create desktop entry
 To create a desktop entry, **ensure that you are in the repository folder first!**  
 Then, run the `create-desktop-entry.sh` file to create a desktop entry into `~/.local/share/applications`.
