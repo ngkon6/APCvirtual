@@ -11,19 +11,19 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ILoveAndLikePizza/APCvirtual"
+    "url": "https://github.com/ngkon6/APCvirtual"
   },
-  "author": "ILoveAndLikePizza",
+  "author": "ngkon",
   "license": "MIT",
   "dependencies": {
-    "easymidi": "^3.1.0"
+    "easymidi": "3.1.0"
   },
   "scripts": {
     "start": "electron .",
     "build": "electron-builder -l"
   },
   "devDependencies": {
-    "electron": "^28.2.2",
-    "electron-builder": "^24.9.1"
+    "electron": "37.2.3",
+    "electron-builder": "26.0.12"
   }
 }
